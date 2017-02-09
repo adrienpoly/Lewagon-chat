@@ -47,20 +47,34 @@ function sendMessage(message, author) {
 }
 
 
+var entityMap = {
+ '&': '&amp;',
+ '<': '&lt;',
+ '>': '&gt;',
+ '"': '&quot;',
+ "'": '&#39;',
+ '/': '&#x2F;',
+ '`': '&#x60;',
+ '=': '&#x3D;'
+};
+
+function escapeHtml (string) {
+ return String(string).replace(/[&<>"'`=\/]/g, function (s) {
+   return entityMap[s];
+ });
+}
+
 function appendMessage(message, author, created_at, id){
   all_messages.push(id);
   var class_user = 'other';
   if (author === 'Adrien'){
     class_user = 'you';
   }
-  message = message.replace(/<script>/g, "").replace(/<\/script>/g, "");
   var full_message = $('<li class=' + class_user + '>');
   var user = $('<a class="user" href="#">').html('<img alt="" src="https://s3.amazonaws.com/uifaces/faces/twitter/toffeenutdesign/128.jpg" />');
   var date = $('<div class="date">').text('posted by ' + author + ' '+ getMinutes(created_at) + ' ago');
-  var message = $('<div class="message">').html('<p>"'+ message + '"</p>');
+  var message = $('<div class="message">').html('<p>"'+ escapeHtml(message) + '"</p>');
   full_message.append(user, date, message);
-  // full_message = full_message.replace(/<script>/g, "").replace(/<\/script>/g, "");
-  console.log(full_message);
   $('#messages>ul').prepend(full_message);
 }
 
